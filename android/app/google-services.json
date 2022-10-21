@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1014968204762",
+    "project_id": "mustaev-9a983",
+    "storage_bucket": "mustaev-9a983.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1014968204762:android:3d7a3f8b7d7d1e637394e3",
+        "android_client_info": {
+          "package_name": "entist.gopleonhik"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1014968204762-u3kguif649t1a37o3g1jbaf6u7jcdtcu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcsNUWCG7JeOW1Zfi1FJAnyJYu25N5qxM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1014968204762-u3kguif649t1a37o3g1jbaf6u7jcdtcu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
