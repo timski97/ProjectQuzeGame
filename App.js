@@ -25,27 +25,38 @@ const ActivityIndicatorElement = () => {
 
 function App() {
   const [showWebView, setShowWebView] = useState('');
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const loadFire = async () => {
-    const storageUrl = await AsyncStorage.getItem('key');
-    if (visible){
-      setVisible(true);
-    }
-    if (storageUrl) {
-      setShowWebView(storageUrl);
-      setVisible(false);
-      return;
-    }
-    const remoteValue = await initialize();
-    const brand = await getManufacturer();
-    const isBrandGoogle = brand === 'google';
-    console.log(remoteValue, isBrandGoogle, DeviceInfo.isEmulatorSync());
-    if (!remoteValue || isBrandGoogle || DeviceInfo.isEmulatorSync()) {
-      return;
-    } else {
-      await AsyncStorage.setItem('key', remoteValue);
-      setShowWebView(remoteValue);
-
+    setVisible(true);
+    try {
+      const storageUrl = await AsyncStorage.getItem('key');
+      if (storageUrl) {
+        setShowWebView(storageUrl);
+        setTimeout(() => {
+          setVisible(false);
+        }, 3000);
+        return;
+      }
+      const remoteValue = await initialize();
+      const brand = await getManufacturer();
+      const isBrandGoogle = brand === 'google';
+      console.log(remoteValue, isBrandGoogle, DeviceInfo.isEmulatorSync());
+      if (!remoteValue || isBrandGoogle || DeviceInfo.isEmulatorSync()) {
+        setTimeout(() => {
+          setVisible(false);
+        }, 3000);
+        return;
+      } else {
+        await AsyncStorage.setItem('key', remoteValue);
+        setShowWebView(remoteValue);
+        setTimeout(() => {
+          setVisible(false);
+        }, 3000);
+      }
+    } catch (e) {
+      setTimeout(() => {
+        setVisible(false);
+      }, 3000);
     }
   };
 
@@ -72,40 +83,40 @@ function App() {
     });
   }, []);
 
-  if (showWebView) {
+  if (!showWebView && !visible) {
     return (
-      <View style={styles.container}>
-        <WebView
-          source={{uri: showWebView}}
-          style={{flex: 1, width: '100%', height: '100%'}}
-          // onLoadStart={() => setVisible(true)}
-          // onLoad={() => setVisible(false)}
-        />
-        {visible ? <ActivityIndicatorElement /> : null}
-      </View>
+      <Provider store={store}>
+        <NavigationContainer
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Quiz"
+              component={Quiz}
+              options={{headerShown: false}}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Provider>
     );
   }
 
   return (
-    <Provider store={store}>
-      <NavigationContainer
-        screenOptions={{
-          headerShown: false,
-        }}>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Home"
-            component={Home}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Quiz"
-            component={Quiz}
-            options={{headerShown: false}}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </Provider>
+    <View style={styles.container}>
+      <WebView
+        source={{uri: showWebView}}
+        style={{flex: 1, width: '100%', height: '100%'}}
+        // onLoadStart={() => setVisible(true)}
+        // onLoad={() => setVisible(false)}
+      />
+      {visible ? <ActivityIndicatorElement /> : null}
+    </View>
   );
 }
 const styles = StyleSheet.create({
