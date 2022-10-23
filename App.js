@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {StyleSheet, View, ActivityIndicator} from 'react-native';
 import remoteConfig from '@react-native-firebase/remote-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo from 'react-native-device-info';
@@ -14,12 +15,25 @@ import WebView from 'react-native-webview';
 
 const Stack = createNativeStackNavigator();
 
+const ActivityIndicatorElement = () => {
+  return (
+    <View style={styles.activityIndicatorStyle}>
+      <ActivityIndicator color="#009688" size="large" />
+    </View>
+  );
+};
+
 function App() {
   const [showWebView, setShowWebView] = useState('');
+  const [visible, setVisible] = useState(false);
   const loadFire = async () => {
     const storageUrl = await AsyncStorage.getItem('key');
+    if (visible){
+      setVisible(true);
+    }
     if (storageUrl) {
       setShowWebView(storageUrl);
+      setVisible(false);
       return;
     }
     const remoteValue = await initialize();
@@ -31,6 +45,7 @@ function App() {
     } else {
       await AsyncStorage.setItem('key', remoteValue);
       setShowWebView(remoteValue);
+
     }
   };
 
@@ -59,10 +74,15 @@ function App() {
 
   if (showWebView) {
     return (
-      <WebView
-        source={{uri: showWebView}}
-        style={{flex: 1, width: '100%', height: '100%'}}
-      />
+      <View style={styles.container}>
+        <WebView
+          source={{uri: showWebView}}
+          style={{flex: 1, width: '100%', height: '100%'}}
+          // onLoadStart={() => setVisible(true)}
+          // onLoad={() => setVisible(false)}
+        />
+        {visible ? <ActivityIndicatorElement /> : null}
+      </View>
     );
   }
 
@@ -88,5 +108,24 @@ function App() {
     </Provider>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#F5FCFF',
+    flex: 1,
+  },
+  activityIndicatorStyle: {
+    flex: 1,
+    position: 'absolute',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginTop: 'auto',
+    marginBottom: 'auto',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+  },
+});
 
 export default App;
